@@ -1,0 +1,59 @@
+#Realizar la base de datos de videojuegos.
+CREATE TABLE Orders (
+    id INT PRIMARY KEY,
+);
+
+CREATE TABLE order_line (
+    id INT PRIMARY KEY,
+    quantity INT,
+);
+
+CREATE TABLE product (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    price DECIMAL(10, 2)
+);
+
+CREATE TABLE food (
+    id INT PRIMARY KEY,
+    expiration_date DATE,
+    calories INT
+);
+
+CREATE TABLE furniture (
+    id INT PRIMARY KEY,
+    manufacture_date DATE
+);
+CREATE TABLE category (
+    id INT PRIMARY KEY,
+    date_created DATE
+);
+#Realizar el proceso de DML y DDL en la base de datos.
+
+-- Seleccionar todos los muebles de la tabla
+SELECT * FROM furniture;
+
+-- Insertar un alimento con ID 1, fecha de vencimiento '2023-05-01' y 150 calorías
+INSERT INTO food (id, expiration_date, calories)
+VALUES (1, '2023-05-01', 150);
+
+-- Insertar otro alimento con ID 2, fecha de vencimiento '2023-06-15' y 200 calorías
+INSERT INTO food (id, expiration_date, calories)
+VALUES (2, '2023-06-15', 200);
+
+-- Actualizar la cantidad de calorías del alimento con ID 1 a 180
+UPDATE food
+SET calories = 180
+WHERE id = 1;
+
+-- Insertar una línea de orden con ID 1 y cantidad 5
+INSERT INTO order_line (id, quantity)
+VALUES (1, 5);
+
+-- Insertar otra línea de orden con ID 2 y cantidad 10
+INSERT INTO order_line (id, quantity)
+VALUES (2, 10);
+
+-- Eliminar la línea de orden con ID 2
+DELETE FROM order_line
+WHERE id = 2;
