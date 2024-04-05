@@ -1,1 +1,138 @@
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS empresa_db;
+USE empresa_db;
+
+-- Crear tabla Usuario con id_usuario como UUID
+CREATE TABLE Usuario (
+    id_usuario BINARY(16) PRIMARY KEY,
+    nombre VARCHAR(50),
+    apellido VARCHAR(50),
+    estado VARCHAR(20),
+    contraseña VARCHAR(50),
+    cargo VARCHAR(50),
+    salario DECIMAL(10, 2),
+    fecha_ingreso DATE,
+    id_perfil INT,
+    FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
+);
+
+-- Crear tabla Perfil
+CREATE TABLE Perfil (
+    id_perfil INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_perfil VARCHAR(50),
+    fecha_vigencia DATE,
+    descripción TEXT,
+    id_encargado INT,
+    FOREIGN KEY (id_encargado) REFERENCES Usuario(id_usuario)
+);
+
+-- Crear tabla Fidelización
+CREATE TABLE Fidelización (
+    id_registro INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario BINARY(16),
+    actividad VARCHAR(100),
+    puntos INT,
+    fecha_actividad DATE,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+-- Crear tabla Login
+CREATE TABLE Login (
+    id_login INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario BINARY(16),
+    fecha_login DATETIME,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+-- Crear vista VistaUsuariosFidelizados
+CREATE VIEW VistaUsuariosFidelizados AS
+SELECT Usuario.id_usuario, Usuario.nombre, Usuario.apellido, Fidelización.actividad, Fidelización.puntos
+FROM Usuario
+JOIN Fidelización ON Usuario.id_usuario = Fidelización.id_usuario;
+
+-- Fin del script
+
+
+//////
+
+import pymysql
+class DML:
+    result = []
+    __host= "localhost"
+    __user = "root"
+    __passwd ="123456789"
+    __db = "empres_xyz"
+
+    def __init__(self, host, user, passwd, db):
+        self.__host =host
+        self.__user =user
+        self.__passwd = passwd
+        self.__db=db
+
+    def conectar(self):
+        self.db = pymysql.connect(host= self.__host,
+                     user = self.__user,
+                     passwd =self.__passwd,
+                     db = self.__db)
+        cur = self.db.cursor()
+        self.cursor =cur
+
+    def insertar(self):
+
+    def consultar(self, query):
+        self.cursor.execute(query)
+        #self.result = self.cursor.fetchall()
+        columnas = self.cursor.description
+        for value in self.cursor.fetchall():
+            tmp = {}
+            for (index, column) in enumerate(value):
+                tmp[columnas[index][0]] = column
+            self.result.append(tmp)
+        self.imprimir()
+
+
+    def cerrarConexion(self):
+        self.db.close()
+
+
+/////
+
+from flask import Flask
+from dml import DML
+
+app = Flask(__name__)
+
+instancia = DML("localhost","root","123456789","empres_xyz")
+
+@app.route("/")
+def inicio():
+    return "<p> Mi primera API <p>"
+
+@app.route("/api/<nombre>")
+def usuario(nombre):
+    print("Tengo lo siguiente: ",nombre)
+    if nombre == "usuario":
+        instancia.conectar()
+        instancia.consultar("SELECT * FROM Usuario")
+        return  instancia.result
+    else:
+        return  "<p> Mi API: <p>"+ nombre
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+/////
+
+from dml import DML
+
+if __name__ == '__main__':
+    instancia = DML("localhost","root","123456789","empres_xyz")
+
+    instancia.conectar()
+    instancia.consultar('SELECT * FROM Usuario')
+
+DML
+
 
